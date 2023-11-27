@@ -618,7 +618,6 @@ void ambulancesMenu()
 
 int main()
 {
-    cout << "hello world!";
     fstream f;
     f.open("./data/appointments.csv", ios::in);
     string temp, s, header;
