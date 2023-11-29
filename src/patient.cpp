@@ -17,6 +17,7 @@ patient::patient()
     cat = "patient";
     category = 2;
     room = 0;
+    illness = "?";
 }
 void patient::fillMap()
 {
@@ -45,6 +46,7 @@ void patient::fillMap()
         getline(s, s10, ',');
         getline(s, s11, ',');
         getline(s, s12, ',');
+        getline(s, p.illness, ',');
         p.id = strToNum(s1);
         p.gender = s4[0];
         p.age = strToNum(s5);
@@ -64,12 +66,12 @@ void patient::saveMap()
     fstream f;
     f.open("./data/temp.csv", ios::out);
     // `le first line conataining column headers:
-    f << "patientId,firstName,lastName,gender,age,mobNumber,address,height,weight,wasHospitalized?,stillAlive(ifHospitalized),room?\n";
+    f << "patientId,firstName,lastName,gender,age,mobNumber,address,height,weight,wasHospitalized?,stillAlive(ifHospitalized)?,room,illness\n";
     for (auto i : hospital::patientsList)
         f << i.second.id << "," << i.second.firstName << "," << i.second.lastName << "," << i.second.gender
           << "," << i.second.age << "," << i.second.mobNumber << "," << i.second.add.addToStr()
           << "," << i.second.height << "," << i.second.weight << ","
-          << (i.second.hospitalized ? 'Y' : 'N') << "," << (i.second.alive ? 'Y' : 'N') << "," << i.second.room << endl;
+          << (i.second.hospitalized ? 'Y' : 'N') << "," << (i.second.alive ? 'Y' : 'N') << "," << i.second.room << "," << i.second.illness << endl;
     f.close();
     remove("./data/patients.csv");
     rename("./data/temp.csv", "./data/patients.csv");
@@ -84,12 +86,8 @@ void patient::addPerson()
     cin >> height;
     cout << "\nEnter the weight of the patient (in pounds):\n";
     cin >> weight;
-    char tt;
-    cout << "\nIs the patient being hospitalized? (Y = Yes || N = No)\n";
-    cin >> tt;
-    while (tt != 'Y' && tt != 'N')
-        cout << "Y or N?\n", cin >> tt;
-    hospitalized = (tt == 'Y');
+    cout << "\nEnter the illness of the patient:\n";
+    cin >> illness;
     if (hospital::patientsList.rbegin() != hospital::patientsList.rend())
         id = ((hospital::patientsList.rbegin())->first) + 1;
     else
@@ -102,12 +100,14 @@ void patient::addPerson()
     f.open("./data/patientsHistory.csv", ios::app);
     f << firstName << "," << lastName << "," << gender << "," << age
       << "," << mobNumber << "," << add.addToStr() << "," << height << ","
-      << weight << "," << ((hospitalized) ? "Y" : "N")
+      << weight << "," << "N"
       << ","
       << "Y"
       << ","
       << "N"
       << "0"
+      << ","
+      << illness
       << "\n";
     f.close();
 
@@ -126,6 +126,7 @@ void patient::printDetails()
     cout << "Weight (pounds) : " << weight << "\n";
     cout << "Was Hospitalized? " << ((hospitalized) ? "Y" : "N") << "\n";
     cout << "Alive?          : " << ((alive) ? "Y" : "N") << "\n";
+    cout << "What illness?   : " << illness << "\n";
     return;
 }
 void patient::printDetailsFromHistory(string extraDetails)
@@ -184,6 +185,8 @@ void patient::getDetails(int rec)
     cin >> opt;
     while (opt != 1 && opt != 2)
         cout << "option 1 or 2?\n", cin >> opt;
+        cin.clear();
+        cin.ignore();
     //1: Filter by ID;
     if (opt == 1)
     {
@@ -263,7 +266,7 @@ void patient::getDetailsFromHistory()
             patient p;
             //creating a string stream object to read from string 'temp';
             stringstream s(temp);
-            string s3, s4, s6, s7, s8, s9, s10, s12, s13;
+            string s3, s4, s6, s7, s8, s9, s10, s12, s13, s14;
             //reading from the string stream object 's';
             getline(s, p.firstName, ',');
             getline(s, p.lastName, ',');
@@ -280,7 +283,8 @@ void patient::getDetailsFromHistory()
                 getline(s, s10, ',');
                 getline(s, s10, ',');
                 getline(s, s12, ',');
-                getline(s, s13);
+                getline(s, s13, ',');
+                getline(s, s14);
                 p.id = 0;
                 p.gender = s3[0];
                 p.age = strToNum(s4);
@@ -290,8 +294,9 @@ void patient::getDetailsFromHistory()
                 p.hospitalized = (s9 == "Y");
                 p.alive = (s10 == "Y");
                 p.room = strToNum(s12);
+                p.illness = s13;
                 matchingRecords.push_back(p);
-                extraDetails.push_back(s13);
+                extraDetails.push_back(s14);
             }
         }
         f.close();
@@ -319,7 +324,7 @@ void patient::getDetailsFromHistory()
             patient p;
             //creating a string stream object to read from string 'temp';
             stringstream s(temp);
-            string s3, s4, s6, s7, s8, s9, s10, s12, s13;
+            string s3, s4, s6, s7, s8, s9, s10, s12, s13, s14;
             //reading from the string stream object 's';
             getline(s, p.firstName, ',');
             getline(s, p.lastName, ',');
@@ -335,7 +340,8 @@ void patient::getDetailsFromHistory()
                 getline(s, s9, ',');
                 getline(s, s10, ',');
                 getline(s, s12, ',');
-                getline(s, s13);
+                getline(s, s13, ',');
+                getline(s, s14);
                 p.id = 0;
                 p.gender = s3[0];
                 p.age = strToNum(s4);
@@ -345,8 +351,9 @@ void patient::getDetailsFromHistory()
                 p.hospitalized = (s9 == "Y");
                 p.alive = (s10 == "Y");
                 p.room = strToNum(s12);
+                p.illness = s13;
                 matchingRecords.push_back(p);
-                extraDetails.push_back(s13);
+                extraDetails.push_back(s14);
             }
         }
         f.close();
@@ -404,6 +411,7 @@ void patient::hospitalize()
         << ((alive) ? "Y" : "N")
         << ",N"
         << room
+        << illness
         << "\n";
     getline(str >> ws, s);
     str << firstName << "," << lastName
@@ -411,7 +419,7 @@ void patient::hospitalize()
         << "," << height << "," << weight << ","
         << "Y,"
         << ((alive) ? "Y,N\n" : "N,N\n")
-        << room;
+        << room << illness;
     getline(str >> ws, corrected);
     f.open("./data/patientsHistory.csv", ios::in);
     fout.open("./data/temp.csv", ios::out);
@@ -475,6 +483,7 @@ void patient::reportADeath()
         << ((alive) ? "Y" : "N")
         << ",N"
         << room
+        << illness
         << "\n";
     getline(str, s);
     f.open("./data/patientsHistory.csv", ios::in);
@@ -485,7 +494,7 @@ void patient::reportADeath()
         {
             fout << firstName << "," << lastName
                  << "," << gender << "," << age << "," << mobNumber << "," << add.addToStr()
-                 << "," << height << "," << weight << "," << ((hospitalized) ? "Y,N,N\n" : "N,N,N\n") << room;
+                 << "," << height << "," << weight << "," << ((hospitalized) ? "Y,N,N\n" : "N,N,N\n") << room << illness;
         }
         else
             fout << temp << "\n";
@@ -545,6 +554,7 @@ void patient::removePerson()
         << ((alive) ? "Y" : "N")
         << ",N"
         << room
+        << illness
         << "\n";
     getline(str, s);
     f.open("./data/patientsHistory.csv", ios::in);
@@ -560,6 +570,7 @@ void patient::removePerson()
                  << ((alive) ? "Y" : "N")
                  << ",Y"
                  << room
+                 << illness
                  << "\n";
         }
         else

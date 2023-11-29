@@ -89,6 +89,8 @@ void appointment::book()
     {
         cout << "Y or N?\n";
         cin >> ans;
+        cin.clear();
+        cin.ignore();
     }
     if (ans == 'N')
     {
@@ -111,6 +113,8 @@ void appointment::book()
                 {
                     cout << "Y or N?\n";
                     cin >> ans;
+                    cin.clear();
+                    cin.ignore();
                 }
             }
         }
@@ -120,6 +124,14 @@ void appointment::book()
         }
     }
     cout << "\n\nNow, search for the required doctor:\n";
+    cout << "Here are all doctors that you can appoint: \n\n";
+    for (auto i : hospital::doctorsList)
+    {
+        if(i.second.appointmentsBooked < 8)
+        {
+            i.second.printDetails(), cout << "\n";
+        }
+    }
     ans = 'Y';
     while (ans == 'Y')
     {
@@ -133,6 +145,8 @@ void appointment::book()
             {
                 cout << "Y or N?\n";
                 cin >> ans;
+                cin.clear();
+                cin.ignore();
             }
         }
         else if (D.appointmentsBooked >= 8)
@@ -144,6 +158,8 @@ void appointment::book()
             {
                 cout << "Y or N?\n";
                 cin >> ans;
+                cin.clear();
+                cin.ignore();
             }
         }
     }

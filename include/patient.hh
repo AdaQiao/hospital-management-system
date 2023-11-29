@@ -13,6 +13,7 @@ private:
     bool hospitalized;
     bool alive;
     int room;
+    string illness;
     friend class appointment;
 
 public:
